@@ -114,6 +114,7 @@ body {
 .column__items {
   display: grid;
   gap: 12px;
+  margin-bottom: 12px;
 }
 
 .item {
@@ -122,4 +123,8 @@ body {
   border-radius: 12px;
   background: #ffffff;
   box-shadow: 0 6px 14px rgba(36, 31, 23, 0.06);
+}
+
+.column__footer {
+  display: flex;
 }

@@ -60,12 +60,24 @@ function createColumnElement(column) {
     itemsElement.appendChild(createItemElement(item));
   });
 
+  const footerElement = document.createElement("div");
+  footerElement.className = "column__footer";
+
+  const addItemButton = document.createElement("button");
+  addItemButton.className = "button button--small";
+  addItemButton.type = "button";
+  addItemButton.textContent = "Add Item";
+  addItemButton.dataset.action = "add-item";
+  addItemButton.dataset.columnId = column.id;
+
   headerElement.appendChild(titleElement);
   actionsElement.appendChild(editButton);
   actionsElement.appendChild(deleteButton);
   headerElement.appendChild(actionsElement);
+  footerElement.appendChild(addItemButton);
   columnElement.appendChild(headerElement);
   columnElement.appendChild(itemsElement);
+  columnElement.appendChild(footerElement);
 
   return columnElement;
 }
@@ -140,6 +152,33 @@ function deleteColumn(columnId) {
   renderBoard();
 }
 
+function addItem(columnId) {
+  const column = state.columns.find((entry) => entry.id === columnId);
+
+  if (!column) {
+    return;
+  }
+
+  const text = window.prompt("Enter item text:", "New task");
+
+  if (text === null) {
+    return;
+  }
+
+  const trimmedText = text.trim();
+
+  if (!trimmedText) {
+    return;
+  }
+
+  column.items.push({
+    id: crypto.randomUUID(),
+    text: trimmedText,
+  });
+
+  renderBoard();
+}
+
 addColumnButton.addEventListener("click", addColumn);
 boardElement.addEventListener("click", (event) => {
   const target = event.target;
@@ -160,6 +199,10 @@ boardElement.addEventListener("click", (event) => {
 
   if (actionButton.dataset.action === "delete-column") {
     deleteColumn(actionButton.dataset.columnId);
+  }
+
+  if (actionButton.dataset.action === "add-item") {
+    addItem(actionButton.dataset.columnId);
   }
 });
 
