@@ -64,6 +64,12 @@ body {
   color: #fff9f5;
 }
 
+.button--danger {
+  border-color: #a84738;
+  background: #fff1ed;
+  color: #7c2d20;
+}
+
 .board {
   display: flex;
   gap: 20px;

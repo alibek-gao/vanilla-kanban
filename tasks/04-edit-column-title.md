@@ -29,7 +29,7 @@ When the user clicks the `Edit` button:
 6. We update the column title in state
 7. We call `renderBoard()` again
 
-## Browser API used: event delegation with `addEventListener()`
+## Browser APIs used: `addEventListener()` and `closest()`
 
 In this task, we used a click listener on the board container:
 
@@ -45,7 +45,17 @@ Instead of attaching one click listener to every `Edit` button, we attach one li
 
 This works well because the board is re-rendered often, and the buttons are recreated each time.
 
-## What else can be done with `addEventListener()`
+We also used:
+
+```js
+const actionButton = target.closest("button[data-action]");
+```
+
+`closest()` walks up the DOM tree and finds the nearest ancestor that matches a selector.
+
+This is more reliable than checking only `event.target.dataset`, because the click might happen on text or another nested part inside the button.
+
+## What else can be done with `addEventListener()` and `closest()`
 
 The browser event system can be used for many other interactions, such as:
 
@@ -56,6 +66,12 @@ The browser event system can be used for many other interactions, such as:
 - `focus` and `blur` for input behavior
 
 We will use more of these later in this kanban project.
+
+The `closest()` method is also useful for:
+
+- finding the nearest card from a clicked button
+- locating the parent column of an item
+- building delegated handlers without attaching many listeners
 
 ## XSS safety note
 

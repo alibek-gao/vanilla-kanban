@@ -46,6 +46,13 @@ function createColumnElement(column) {
   editButton.dataset.action = "edit-column";
   editButton.dataset.columnId = column.id;
 
+  const deleteButton = document.createElement("button");
+  deleteButton.className = "button button--small button--danger";
+  deleteButton.type = "button";
+  deleteButton.textContent = "Delete";
+  deleteButton.dataset.action = "delete-column";
+  deleteButton.dataset.columnId = column.id;
+
   const itemsElement = document.createElement("div");
   itemsElement.className = "column__items";
 
@@ -55,6 +62,7 @@ function createColumnElement(column) {
 
   headerElement.appendChild(titleElement);
   actionsElement.appendChild(editButton);
+  actionsElement.appendChild(deleteButton);
   headerElement.appendChild(actionsElement);
   columnElement.appendChild(headerElement);
   columnElement.appendChild(itemsElement);
@@ -115,6 +123,23 @@ function editColumn(columnId) {
   renderBoard();
 }
 
+function deleteColumn(columnId) {
+  const column = state.columns.find((entry) => entry.id === columnId);
+
+  if (!column) {
+    return;
+  }
+
+  const confirmed = window.confirm(`Delete "${column.title}" column?`);
+
+  if (!confirmed) {
+    return;
+  }
+
+  state.columns = state.columns.filter((entry) => entry.id !== columnId);
+  renderBoard();
+}
+
 addColumnButton.addEventListener("click", addColumn);
 boardElement.addEventListener("click", (event) => {
   const target = event.target;
@@ -123,8 +148,18 @@ boardElement.addEventListener("click", (event) => {
     return;
   }
 
-  if (target.dataset.action === "edit-column") {
-    editColumn(target.dataset.columnId);
+  const actionButton = target.closest("button[data-action]");
+
+  if (!(actionButton instanceof HTMLButtonElement)) {
+    return;
+  }
+
+  if (actionButton.dataset.action === "edit-column") {
+    editColumn(actionButton.dataset.columnId);
+  }
+
+  if (actionButton.dataset.action === "delete-column") {
+    deleteColumn(actionButton.dataset.columnId);
   }
 });
 
