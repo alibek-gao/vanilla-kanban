@@ -125,6 +125,24 @@ body {
   box-shadow: 0 6px 14px rgba(36, 31, 23, 0.06);
 }
 
+.item__content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.item__text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.item__actions {
+  display: flex;
+  gap: 8px;
+}
+
 .column__footer {
   display: flex;
 }

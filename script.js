@@ -16,11 +16,34 @@ const state = {
   ],
 };
 
-function createItemElement(item) {
+function createItemElement(columnId, item) {
   const itemElement = document.createElement("div");
   itemElement.className = "item";
-  itemElement.textContent = item.text;
   itemElement.dataset.itemId = item.id;
+  itemElement.dataset.columnId = columnId;
+
+  const contentElement = document.createElement("div");
+  contentElement.className = "item__content";
+
+  const textElement = document.createElement("div");
+  textElement.className = "item__text";
+  textElement.textContent = item.text;
+
+  const actionsElement = document.createElement("div");
+  actionsElement.className = "item__actions";
+
+  const editButton = document.createElement("button");
+  editButton.className = "button button--small";
+  editButton.type = "button";
+  editButton.textContent = "Edit";
+  editButton.dataset.action = "edit-item";
+  editButton.dataset.columnId = columnId;
+  editButton.dataset.itemId = item.id;
+
+  actionsElement.appendChild(editButton);
+  contentElement.appendChild(textElement);
+  contentElement.appendChild(actionsElement);
+  itemElement.appendChild(contentElement);
 
   return itemElement;
 }
@@ -57,7 +80,7 @@ function createColumnElement(column) {
   itemsElement.className = "column__items";
 
   column.items.forEach((item) => {
-    itemsElement.appendChild(createItemElement(item));
+    itemsElement.appendChild(createItemElement(column.id, item));
   });
 
   const footerElement = document.createElement("div");
@@ -179,6 +202,35 @@ function addItem(columnId) {
   renderBoard();
 }
 
+function editItem(columnId, itemId) {
+  const column = state.columns.find((entry) => entry.id === columnId);
+
+  if (!column) {
+    return;
+  }
+
+  const item = column.items.find((entry) => entry.id === itemId);
+
+  if (!item) {
+    return;
+  }
+
+  const nextText = window.prompt("Edit item text:", item.text);
+
+  if (nextText === null) {
+    return;
+  }
+
+  const trimmedText = nextText.trim();
+
+  if (!trimmedText) {
+    return;
+  }
+
+  item.text = trimmedText;
+  renderBoard();
+}
+
 addColumnButton.addEventListener("click", addColumn);
 boardElement.addEventListener("click", (event) => {
   const target = event.target;
@@ -203,6 +255,10 @@ boardElement.addEventListener("click", (event) => {
 
   if (actionButton.dataset.action === "add-item") {
     addItem(actionButton.dataset.columnId);
+  }
+
+  if (actionButton.dataset.action === "edit-item") {
+    editItem(actionButton.dataset.columnId, actionButton.dataset.itemId);
   }
 });
 
