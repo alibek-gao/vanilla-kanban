@@ -40,7 +40,16 @@ function createItemElement(columnId, item) {
   editButton.dataset.columnId = columnId;
   editButton.dataset.itemId = item.id;
 
+  const deleteButton = document.createElement("button");
+  deleteButton.className = "button button--small button--danger";
+  deleteButton.type = "button";
+  deleteButton.textContent = "Delete";
+  deleteButton.dataset.action = "delete-item";
+  deleteButton.dataset.columnId = columnId;
+  deleteButton.dataset.itemId = item.id;
+
   actionsElement.appendChild(editButton);
+  actionsElement.appendChild(deleteButton);
   contentElement.appendChild(textElement);
   contentElement.appendChild(actionsElement);
   itemElement.appendChild(contentElement);
@@ -231,6 +240,29 @@ function editItem(columnId, itemId) {
   renderBoard();
 }
 
+function deleteItem(columnId, itemId) {
+  const column = state.columns.find((entry) => entry.id === columnId);
+
+  if (!column) {
+    return;
+  }
+
+  const item = column.items.find((entry) => entry.id === itemId);
+
+  if (!item) {
+    return;
+  }
+
+  const confirmed = window.confirm(`Delete "${item.text}" item?`);
+
+  if (!confirmed) {
+    return;
+  }
+
+  column.items = column.items.filter((entry) => entry.id !== itemId);
+  renderBoard();
+}
+
 addColumnButton.addEventListener("click", addColumn);
 boardElement.addEventListener("click", (event) => {
   const target = event.target;
@@ -259,6 +291,10 @@ boardElement.addEventListener("click", (event) => {
 
   if (actionButton.dataset.action === "edit-item") {
     editItem(actionButton.dataset.columnId, actionButton.dataset.itemId);
+  }
+
+  if (actionButton.dataset.action === "delete-item") {
+    deleteItem(actionButton.dataset.columnId, actionButton.dataset.itemId);
   }
 });
 
