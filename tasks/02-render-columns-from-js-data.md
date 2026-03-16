@@ -62,6 +62,36 @@ The `crypto` API is larger than just `randomUUID()`. Some common uses are:
 
 For this project, `randomUUID()` is the simplest and most useful part because we only need reliable unique identifiers.
 
+## XSS safety note
+
+This task renders user-facing text with `textContent`, not `innerHTML`.
+
+That is important for safety.
+
+Example:
+
+```js
+titleElement.textContent = column.title;
+itemElement.textContent = item.text;
+```
+
+If a value contains something that looks like HTML, the browser will show it as text instead of executing it.
+
+For example, this input:
+
+```html
+<img src=x onerror=alert(1)>
+```
+
+would be displayed as text when using `textContent`.
+
+If we used `innerHTML` instead, the browser would parse it as markup, which can create XSS vulnerabilities.
+
+Rule for this project:
+
+- use `textContent` for user-entered text
+- avoid `innerHTML` for untrusted content
+
 ## Why this step matters
 
 This is the foundation for every next feature.

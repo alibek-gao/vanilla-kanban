@@ -1,4 +1,5 @@
 const boardElement = document.querySelector("#board");
+const addColumnButton = document.querySelector("#add-column-button");
 
 const state = {
   columns: [
@@ -56,5 +57,29 @@ function renderBoard() {
     boardElement.appendChild(createColumnElement(column));
   });
 }
+
+function addColumn() {
+  const title = window.prompt("Enter column title:", "New Column");
+
+  if (title === null) {
+    return;
+  }
+
+  const trimmedTitle = title.trim();
+
+  if (!trimmedTitle) {
+    return;
+  }
+
+  state.columns.push({
+    id: crypto.randomUUID(),
+    title: trimmedTitle,
+    items: [],
+  });
+
+  renderBoard();
+}
+
+addColumnButton.addEventListener("click", addColumn);
 
 renderBoard();
