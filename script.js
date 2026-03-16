@@ -36,6 +36,16 @@ function createColumnElement(column) {
   const titleElement = document.createElement("h2");
   titleElement.textContent = column.title;
 
+  const actionsElement = document.createElement("div");
+  actionsElement.className = "column__actions";
+
+  const editButton = document.createElement("button");
+  editButton.className = "button button--small";
+  editButton.type = "button";
+  editButton.textContent = "Edit";
+  editButton.dataset.action = "edit-column";
+  editButton.dataset.columnId = column.id;
+
   const itemsElement = document.createElement("div");
   itemsElement.className = "column__items";
 
@@ -44,6 +54,8 @@ function createColumnElement(column) {
   });
 
   headerElement.appendChild(titleElement);
+  actionsElement.appendChild(editButton);
+  headerElement.appendChild(actionsElement);
   columnElement.appendChild(headerElement);
   columnElement.appendChild(itemsElement);
 
@@ -80,6 +92,40 @@ function addColumn() {
   renderBoard();
 }
 
+function editColumn(columnId) {
+  const column = state.columns.find((entry) => entry.id === columnId);
+
+  if (!column) {
+    return;
+  }
+
+  const nextTitle = window.prompt("Edit column title:", column.title);
+
+  if (nextTitle === null) {
+    return;
+  }
+
+  const trimmedTitle = nextTitle.trim();
+
+  if (!trimmedTitle) {
+    return;
+  }
+
+  column.title = trimmedTitle;
+  renderBoard();
+}
+
 addColumnButton.addEventListener("click", addColumn);
+boardElement.addEventListener("click", (event) => {
+  const target = event.target;
+
+  if (!(target instanceof HTMLElement)) {
+    return;
+  }
+
+  if (target.dataset.action === "edit-column") {
+    editColumn(target.dataset.columnId);
+  }
+});
 
 renderBoard();

@@ -82,9 +82,27 @@ body {
   box-shadow: var(--shadow);
 }
 
+.column__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .column__header h2 {
-  margin: 0 0 16px;
+  margin: 0;
   font-size: 1.25rem;
+}
+
+.column__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.button--small {
+  padding: 6px 10px;
+  font-size: 0.875rem;
 }
 
 .column__items {
