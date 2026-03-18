@@ -123,6 +123,7 @@ body {
   border-radius: 12px;
   background: #ffffff;
   box-shadow: 0 6px 14px rgba(36, 31, 23, 0.06);
+  cursor: grab;
 }
 
 .item__content {
@@ -141,6 +142,16 @@ body {
 .item__actions {
   display: flex;
   gap: 8px;
+}
+
+.item--dragging {
+  opacity: 0.45;
+}
+
+.column__items--drag-over {
+  outline: 2px dashed rgba(201, 111, 59, 0.7);
+  outline-offset: 6px;
+  border-radius: 12px;
 }
 
 .column__footer {
