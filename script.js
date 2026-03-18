@@ -15,6 +15,12 @@ const state = {
           id: crypto.randomUUID(),
           text: "Sample task 2",
         },
+      ],
+    },
+    {
+      id: crypto.randomUUID(),
+      title: "Done",
+      items: [
         {
           id: crypto.randomUUID(),
           text: "Sample task 3",
@@ -277,37 +283,44 @@ function deleteItem(columnId, itemId) {
   renderBoard();
 }
 
-function reorderItemsInColumn(columnId, draggedItemId, targetItemId, position) {
-  const column = state.columns.find((entry) => entry.id === columnId);
+function moveItem(draggedItemId, sourceColumnId, targetColumnId, targetItemId, position) {
+  const sourceColumn = state.columns.find((entry) => entry.id === sourceColumnId);
+  const targetColumn = state.columns.find((entry) => entry.id === targetColumnId);
 
-  if (!column) {
+  // Stop if either the source or target column no longer exists.
+  if (!sourceColumn || !targetColumn) {
     return;
   }
 
-  const sourceIndex = column.items.findIndex((entry) => entry.id === draggedItemId);
+  const sourceIndex = sourceColumn.items.findIndex((entry) => entry.id === draggedItemId);
 
+  // Stop if the dragged item cannot be found in the source column.
   if (sourceIndex === -1) {
     return;
   }
 
-  const [movedItem] = column.items.splice(sourceIndex, 1);
+  // Remove the dragged item from its original position first.
+  const [movedItem] = sourceColumn.items.splice(sourceIndex, 1);
 
+  // If there is no target item, append the dragged item to the end of the target column.
   if (!targetItemId || position === "end") {
-    column.items.push(movedItem);
+    targetColumn.items.push(movedItem);
     renderBoard();
     return;
   }
 
-  const targetIndex = column.items.findIndex((entry) => entry.id === targetItemId);
+  const targetIndex = targetColumn.items.findIndex((entry) => entry.id === targetItemId);
 
+  // Fallback to appending if the intended target item is no longer present.
   if (targetIndex === -1) {
-    column.items.push(movedItem);
+    targetColumn.items.push(movedItem);
     renderBoard();
     return;
   }
 
+  // Insert before or after the target item based on the computed drop position.
   const insertIndex = position === "before" ? targetIndex : targetIndex + 1;
-  column.items.splice(insertIndex, 0, movedItem);
+  targetColumn.items.splice(insertIndex, 0, movedItem);
   renderBoard();
 }
 
@@ -406,8 +419,8 @@ boardElement.addEventListener("dragover", (event) => {
     return;
   }
 
-  // Task 9 only supports reordering inside the source column.
-  if (!dragState.sourceColumnId || dragState.sourceColumnId !== columnElement.dataset.columnId) {
+  // Ignore drag-over events unless a drag is currently active.
+  if (!dragState.itemId || !dragState.sourceColumnId) {
     return;
   }
 
@@ -441,8 +454,8 @@ boardElement.addEventListener("drop", (event) => {
 
   const targetColumnId = columnElement.dataset.columnId;
 
-  // Task 9 rejects drops unless we are dragging an item inside its source column.
-  if (!dragState.itemId || !dragState.sourceColumnId || dragState.sourceColumnId !== targetColumnId) {
+  // Ignore drops unless a valid dragged item and source column are being tracked.
+  if (!dragState.itemId || !dragState.sourceColumnId) {
     clearDragStyles();
     return;
   }
@@ -454,7 +467,7 @@ boardElement.addEventListener("drop", (event) => {
 
   // If the drop is on empty list space, move the item to the end.
   if (!(targetItemElement instanceof HTMLElement)) {
-    reorderItemsInColumn(targetColumnId, dragState.itemId, null, "end");
+    moveItem(dragState.itemId, dragState.sourceColumnId, targetColumnId, null, "end");
     dragState.itemId = null;
     dragState.sourceColumnId = null;
     clearDragStyles();
@@ -476,7 +489,7 @@ boardElement.addEventListener("drop", (event) => {
   // Compare the cursor to the card midpoint to place before or after it.
   const position = event.clientY < middleY ? "before" : "after";
 
-  reorderItemsInColumn(targetColumnId, dragState.itemId, targetItemId, position);
+  moveItem(dragState.itemId, dragState.sourceColumnId, targetColumnId, targetItemId, position);
   dragState.itemId = null;
   dragState.sourceColumnId = null;
   clearDragStyles();
