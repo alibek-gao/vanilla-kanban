@@ -35,6 +35,19 @@ const dragState = {
   sourceColumnId: null,
 };
 
+function findColumn(columnId) {
+  return state.columns.find((entry) => entry.id === columnId);
+}
+
+function findItem(column, itemId) {
+  return column.items.find((entry) => entry.id === itemId);
+}
+
+function resetDragState() {
+  dragState.itemId = null;
+  dragState.sourceColumnId = null;
+}
+
 function createItemElement(columnId, item) {
   const itemElement = document.createElement("div");
   itemElement.className = "item";
@@ -165,7 +178,7 @@ function addColumn() {
 }
 
 function editColumn(columnId) {
-  const column = state.columns.find((entry) => entry.id === columnId);
+  const column = findColumn(columnId);
 
   if (!column) {
     return;
@@ -188,7 +201,7 @@ function editColumn(columnId) {
 }
 
 function deleteColumn(columnId) {
-  const column = state.columns.find((entry) => entry.id === columnId);
+  const column = findColumn(columnId);
 
   if (!column) {
     return;
@@ -205,7 +218,7 @@ function deleteColumn(columnId) {
 }
 
 function addItem(columnId) {
-  const column = state.columns.find((entry) => entry.id === columnId);
+  const column = findColumn(columnId);
 
   if (!column) {
     return;
@@ -232,13 +245,13 @@ function addItem(columnId) {
 }
 
 function editItem(columnId, itemId) {
-  const column = state.columns.find((entry) => entry.id === columnId);
+  const column = findColumn(columnId);
 
   if (!column) {
     return;
   }
 
-  const item = column.items.find((entry) => entry.id === itemId);
+  const item = findItem(column, itemId);
 
   if (!item) {
     return;
@@ -261,13 +274,13 @@ function editItem(columnId, itemId) {
 }
 
 function deleteItem(columnId, itemId) {
-  const column = state.columns.find((entry) => entry.id === columnId);
+  const column = findColumn(columnId);
 
   if (!column) {
     return;
   }
 
-  const item = column.items.find((entry) => entry.id === itemId);
+  const item = findItem(column, itemId);
 
   if (!item) {
     return;
@@ -284,8 +297,8 @@ function deleteItem(columnId, itemId) {
 }
 
 function moveItem(draggedItemId, sourceColumnId, targetColumnId, targetItemId, position) {
-  const sourceColumn = state.columns.find((entry) => entry.id === sourceColumnId);
-  const targetColumn = state.columns.find((entry) => entry.id === targetColumnId);
+  const sourceColumn = findColumn(sourceColumnId);
+  const targetColumn = findColumn(targetColumnId);
 
   // Stop if either the source or target column no longer exists.
   if (!sourceColumn || !targetColumn) {
@@ -336,6 +349,11 @@ function clearDragStyles() {
   document.querySelectorAll(".column__items--drop-empty").forEach((element) => {
     element.classList.remove("column__items--drop-empty");
   });
+}
+
+function endDragState() {
+  resetDragState();
+  clearDragStyles();
 }
 
 addColumnButton.addEventListener("click", addColumn);
@@ -476,9 +494,7 @@ boardElement.addEventListener("drop", (event) => {
   // If the drop is on empty list space, move the item to the end.
   if (!(targetItemElement instanceof HTMLElement)) {
     moveItem(dragState.itemId, dragState.sourceColumnId, targetColumnId, null, "end");
-    dragState.itemId = null;
-    dragState.sourceColumnId = null;
-    clearDragStyles();
+    endDragState();
     return;
   }
 
@@ -486,9 +502,7 @@ boardElement.addEventListener("drop", (event) => {
 
   // Dropping onto the same item means there is nothing to reorder.
   if (targetItemId === dragState.itemId) {
-    dragState.itemId = null;
-    dragState.sourceColumnId = null;
-    clearDragStyles();
+    endDragState();
     return;
   }
 
@@ -498,16 +512,12 @@ boardElement.addEventListener("drop", (event) => {
   const position = event.clientY < middleY ? "before" : "after";
 
   moveItem(dragState.itemId, dragState.sourceColumnId, targetColumnId, targetItemId, position);
-  dragState.itemId = null;
-  dragState.sourceColumnId = null;
-  clearDragStyles();
+  endDragState();
 });
 
 boardElement.addEventListener("dragend", () => {
   // Always clean up temporary drag state, even if the drop was cancelled.
-  dragState.itemId = null;
-  dragState.sourceColumnId = null;
-  clearDragStyles();
+  endDragState();
 });
 
 renderBoard();
