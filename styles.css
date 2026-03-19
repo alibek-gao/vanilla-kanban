@@ -114,7 +114,22 @@ body {
 .column__items {
   display: grid;
   gap: 12px;
+  min-height: 72px;
   margin-bottom: 12px;
+  padding: 4px;
+  border-radius: 12px;
+  transition: background-color 0.15s ease, outline-color 0.15s ease;
+}
+
+.column__items:empty::before {
+  content: "Drop items here";
+  display: grid;
+  place-items: center;
+  min-height: 64px;
+  border: 1px dashed #d8d1c2;
+  border-radius: 12px;
+  color: var(--muted);
+  background: rgba(255, 253, 248, 0.8);
 }
 
 .item {
@@ -149,9 +164,15 @@ body {
 }
 
 .column__items--drag-over {
+  background: rgba(201, 111, 59, 0.08);
   outline: 2px dashed rgba(201, 111, 59, 0.7);
   outline-offset: 6px;
   border-radius: 12px;
+}
+
+.column__items--drop-empty::before {
+  border-color: rgba(201, 111, 59, 0.7);
+  color: var(--accent);
 }
 
 .column__footer {

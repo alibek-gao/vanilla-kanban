@@ -332,6 +332,10 @@ function clearDragStyles() {
   document.querySelectorAll(".column__items--drag-over").forEach((element) => {
     element.classList.remove("column__items--drag-over");
   });
+
+  document.querySelectorAll(".column__items--drop-empty").forEach((element) => {
+    element.classList.remove("column__items--drop-empty");
+  });
 }
 
 addColumnButton.addEventListener("click", addColumn);
@@ -428,6 +432,10 @@ boardElement.addEventListener("dragover", (event) => {
   event.preventDefault();
   clearDragStyles();
   itemsContainer.classList.add("column__items--drag-over");
+
+  if (!itemsContainer.children.length) {
+    itemsContainer.classList.add("column__items--drop-empty");
+  }
 });
 
 boardElement.addEventListener("drop", (event) => {
